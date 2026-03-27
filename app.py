@@ -1,133 +1,97 @@
 import streamlit as st
-import mysql.connector
-from datetime import datetime
+from db import init_db
+from todo import show_todo
+from calculator import show_calculator
+from expense import show_expense
+from analyzer import show_analyzer
+from stock import show_stock
+from password import show_password
+from weather import show_weather
 
-# ------------------ DB CONNECTION ------------------
-def get_connection():
-    return mysql.connector.connect(
-        host="localhost",
-        user="root",
-        password="",
-        database="todo_app"
-    )
+# ---------- INIT ----------
+st.set_page_config(
+    page_title="Multi App Dashboard",
+    page_icon="🚀",
+    layout="wide"
+)
 
-# ------------------ CREATE DATABASE & TABLE ------------------
-def init_db():
-    conn = mysql.connector.connect(
-        host="localhost",
-        user="root",
-        password=""
-    )
-    cursor = conn.cursor()
-
-    # Create DB
-    cursor.execute("CREATE DATABASE IF NOT EXISTS todo_app")
-
-    # Use DB
-    cursor.execute("USE todo_app")
-
-    # Create table
-    cursor.execute("""
-        CREATE TABLE IF NOT EXISTS tasks (
-            id INT AUTO_INCREMENT PRIMARY KEY,
-            title VARCHAR(255),
-            created_at DATETIME
-        )
-    """)
-
-    conn.commit()
-    cursor.close()
-    conn.close()
-
-# ------------------ CRUD FUNCTIONS ------------------
-def add_task(title):
-    conn = get_connection()
-    cursor = conn.cursor()
-
-    query = "INSERT INTO tasks (title, created_at) VALUES (%s, %s)"
-    values = (title, datetime.now())
-
-    cursor.execute(query, values)
-    conn.commit()
-
-    cursor.close()
-    conn.close()
-
-
-def get_tasks():
-    conn = get_connection()
-    cursor = conn.cursor()
-
-    cursor.execute("SELECT * FROM tasks ORDER BY created_at DESC")
-    data = cursor.fetchall()
-
-    cursor.close()
-    conn.close()
-    return data
-
-
-def delete_task(task_id):
-    conn = get_connection()
-    cursor = conn.cursor()
-
-    cursor.execute("DELETE FROM tasks WHERE id=%s", (task_id,))
-    conn.commit()
-
-    cursor.close()
-    conn.close()
-
-
-def update_task(task_id, new_title):
-    conn = get_connection()
-    cursor = conn.cursor()
-
-    cursor.execute(
-        "UPDATE tasks SET title=%s WHERE id=%s",
-        (new_title, task_id)
-    )
-    conn.commit()
-
-    cursor.close()
-    conn.close()
-
-# ------------------ INIT ------------------
 init_db()
 
-st.title("📝 To-Do App (MySQL + Streamlit)")
+# ---------- SIDEBAR ----------
+st.sidebar.markdown("## 📌 My Applications")
 
-# ------------------ ADD TASK ------------------
-st.subheader("➕ Add Task")
-new_task = st.text_input("Enter task")
+page = st.sidebar.radio(
+    "Navigate",
+    [
+        "🏠 Home",
+        "📝 Notes",
+        "🧮 Calculator",
+        "💰 Expense Tracker",
+        "📊 Data Analyzer",
+        "📈 Stock Dashboard",
+        "🔐 Password Generator",
+        "🌦 Weather App"
+    ]
+)
 
-if st.button("Add"):
-    if new_task:
-        add_task(new_task)
-        st.success("Task added!")
-    else:
-        st.warning("Enter something!")
+st.sidebar.markdown("---")
+st.sidebar.info("Built with ❤️ using Streamlit + MySQL")
 
-# ------------------ VIEW TASKS ------------------
-st.subheader("📋 Your Tasks")
+# ---------- HOME ----------
+if page == "🏠 Home":
+    st.title("🚀 Multi App Dashboard")
 
-tasks = get_tasks()
-
-for task in tasks:
-    task_id, title, created_at = task
-
-    col1, col2, col3 = st.columns([4, 2, 2])
+    col1, col2, col3 = st.columns(3)
 
     with col1:
-        st.write(f"**{title}**")
-        st.caption(f"🕒 {created_at}")
+        st.markdown("### 📝 Notes App")
+        st.write("Notes + files + image preview")
 
     with col2:
-        if st.button("Delete", key=f"del_{task_id}"):
-            delete_task(task_id)
-            st.rerun()
+        st.markdown("### 🧮 Calculator")
+        st.write("Smart calculator with DB history")
 
     with col3:
-        new_title = st.text_input("Edit", key=f"edit_{task_id}")
-        if st.button("Update", key=f"upd_{task_id}"):
-            if new_title:
-                update_task(task_id, new_title)
-                st.rerun()
+        st.markdown("### 💰 Expense Tracker")
+        st.write("Finance analytics & charts")
+
+    col4, col5, col6 = st.columns(3)
+
+    with col4:
+        st.markdown("### 📊 Data Analyzer")
+        st.write("Upload CSV & analyze")
+
+    with col5:
+        st.markdown("### 📈 Stock Dashboard")
+        st.write("Stock trends & charts")
+
+    with col6:
+        st.markdown("### 🔐 Password Generator")
+        st.write("Generate secure passwords")
+
+    st.markdown("### 🌦 Weather App")
+    st.write("Check live weather")
+
+    st.success("👉 Select any app from sidebar")
+
+# ---------- ROUTING ----------
+elif page == "📝 Notes":
+    show_todo()
+
+elif page == "🧮 Calculator":
+    show_calculator()
+
+elif page == "💰 Expense Tracker":
+    show_expense()
+
+elif page == "📊 Data Analyzer":
+    show_analyzer()
+
+elif page == "📈 Stock Dashboard":
+    show_stock()
+
+elif page == "🔐 Password Generator":
+    show_password()
+
+elif page == "🌦 Weather App":
+    show_weather()
