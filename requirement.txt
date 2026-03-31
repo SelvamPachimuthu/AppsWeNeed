@@ -5,3 +5,4 @@ calculator
 expense
 analyzer 
 password
+mysql-connector-python
