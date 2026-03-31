@@ -4,9 +4,8 @@ from todo import show_todo
 from calculator import show_calculator
 from expense import show_expense
 from analyzer import show_analyzer
-from stock import show_stock
 from password import show_password
-from weather import show_weather
+
 
 # ---------- INIT ----------
 st.set_page_config(
@@ -28,9 +27,7 @@ page = st.sidebar.radio(
         "🧮 Calculator",
         "💰 Expense Tracker",
         "📊 Data Analyzer",
-        "📈 Stock Dashboard",
         "🔐 Password Generator",
-        "🌦 Weather App"
     ]
 )
 
@@ -62,15 +59,9 @@ if page == "🏠 Home":
         st.write("Upload CSV & analyze")
 
     with col5:
-        st.markdown("### 📈 Stock Dashboard")
-        st.write("Stock trends & charts")
-
-    with col6:
         st.markdown("### 🔐 Password Generator")
         st.write("Generate secure passwords")
 
-    st.markdown("### 🌦 Weather App")
-    st.write("Check live weather")
 
     st.success("👉 Select any app from sidebar")
 
@@ -87,11 +78,5 @@ elif page == "💰 Expense Tracker":
 elif page == "📊 Data Analyzer":
     show_analyzer()
 
-elif page == "📈 Stock Dashboard":
-    show_stock()
-
 elif page == "🔐 Password Generator":
     show_password()
-
-elif page == "🌦 Weather App":
-    show_weather()
